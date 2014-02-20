@@ -1,4 +1,4 @@
-[![build status](https://secure.travis-ci.org/tpeden/express-resource-new.png)](http://travis-ci.org/tpeden/express-resource-new)
+[![build status](https://secure.travis-ci.org/rbngzlv/express-resource-new.png)](http://travis-ci.org/rbngzlv/express-resource-new)
 # Express Resource (new)
 
 express-resouce-new provides resourceful routing to express with improved nesting and auto-require.
@@ -7,7 +7,7 @@ express-resouce-new provides resourceful routing to express with improved nestin
 
 npm:
 
-    $ npm install express-resource-new
+    $ npm install git+https://github.com/rbngzlv/express-resource-new.git
 
 ## Usage
 
@@ -16,17 +16,22 @@ In your main application file (i.e. app.js or server.js) just add the following:
     var express = require('express'),
         Resource = require('express-resource-new'), // <- Add this (Resource really isn't needed)
         app = express.createServer();
-    
+
     app.configure(function(){
       app.set('views', __dirname + '/views');
       // Add the following to your configure block (you can use any path you want)
-      app.set('controllers', __dirname + '/controllers');
+      // it is important to note that /app directory layout must follow a specific pattern to work properly see [App Layout](#app-layout)
+      app.set('app_dir', __dirname + '/app');
       /* ... */
     });
 
-Now in the `./controllers` directory you can put your "controllers" with one or more of the supported actions as follows:
+### App Layout
+   /app/:version/controllers/:controller_name/index.js
+                 routes.js
 
-`./controllers/articles/index.js`:
+Now in the `controllers` directory you can put your "controllers" with one or more of the supported actions as follows:
+
+`controllers/articles/index.js`:
 
     module.exports = {
       index: function(request, response) {
@@ -89,15 +94,16 @@ Lastly just call `app.resource()` with your controller name. Nesting is done by 
     var express = require('express'),
         Resource = require('express-resource-new'),
         app = express.createServer();
-    
+
     app.configure(function(){
       app.set('views', __dirname + '/views');
-      app.set('controllers', __dirname + '/controllers');
+      // it is important to note that /app directory layout must follow a specific pattern to work properly see [App Layout](#app-layout)
+      app.set('app_dir', __dirname + '/app');
       /* ... */
     });
-    
-    app.resource('articles', function() {
-      app.resource('comments', { id: 'id' }); // You can also call `this.resource('comments')`
+
+    app.resource('articles', { 'version': 'v1' }, function() {
+      app.resource('comments', { 'version': 'v1', id: 'id' }); // You can also call `this.resource('comments')`
     });
 
 You can also create non-standard RESTful routes.
@@ -162,6 +168,7 @@ Patches are welcome, fork away! :-)
     The MIT License
 
     Copyright (c) 2012 TJ Peden <tj.peden@tj-coding.com>
+    Copyright (c) 2014 Ruben G <rbngzlv@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
